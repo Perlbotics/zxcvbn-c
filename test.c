@@ -200,7 +200,8 @@ int DoChecks(char *file)
         ++w;
     }
     fclose(f);
-    printf("Tested %d words, %d with low entropy, %d with high\n", w, Less, More);
+    printf("Tested %d words, %d with lower entropy, %d with higher entropy than expected.\n", w, Less, More);
+    printf("Summary: %s\n", (Less==0 && More==0 && w!=0 && r==0) ? "PASSED" : "*FAILED*");
     return r;
 }
 
@@ -210,6 +211,10 @@ int main(int argc, char **argv)
     Quiet = 0;
     Checks = 0;
     White = 0;
+
+    printf("Info: Dictionary%s included; version: %s; git-rev: %s\n",
+           ( ZxcvbnDictIncluded() ? "" : " NOT" ), ZxcvbnVersion(), ZxcvbnGitRev());
+
     if (!ZxcvbnInit("zxcvbn.dict"))
     {
         printf("Failed to open dictionary file\n");
