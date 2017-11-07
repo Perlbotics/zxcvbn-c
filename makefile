@@ -5,6 +5,30 @@ CXXFLAGS ?= -O2 -Wall -Wextra
 CC ?= gcc
 AR ?= ar
 CXX ?= g++
+SONAME_FLAG ?= -soname
+CPP_STD ?= c++11
+
+#----------------------------------------------------------------------
+#-- Uncomment according to platform and/or GCC version.
+#
+# - CentOS	7.4/64		- gcc version 4.8.5
+# - Debian 	7.11/64		- gcc version 4.7.2
+# - openSUSE 	42.3/64  	- gcc version 4.8.5
+# - Ubuntu	16.04/64	- gcc version 5.4.0
+#
+# (defaults work)
+
+#-- CentOS	6.9/64 		- gcc version 4.4.7
+#CPP_STD=gnu++0x
+
+#-- Solaris	10/64  		- gcc version 4.8.1
+#                                 not working with gcc 3.4.* due to non-availability of C++11
+#SHELL=/bin/bash
+#SONAME_FLAG=-h
+#CC=gcc
+#CXX=g++
+
+#----------------------------------------------------------------------
 
 # need zxcvbn.h prior to package installation
 CPPFLAGS += -I.
@@ -23,7 +47,7 @@ test-shlib: test.c $(TARGET_LIB)
 
 $(TARGET_LIB): zxcvbn-inline-pic.o
 	$(CC) $(CPPFLAGS) $(CFLAGS) \
-		-o $@ $^ -fPIC -shared -Wl,-soname,$(SONAME) $(LDFLAGS) -lm
+		-o $@ $^ -fPIC -shared -Wl,$(SONAME_FLAG),$(SONAME) $(LDFLAGS) -lm
 	if [ ! -e $(SONAME) ]; then ln -s $(TARGET_LIB) $(SONAME); fi
 
 test-statlib: test.c libzxcvbn.a
@@ -57,7 +81,7 @@ dict-crc.h: dictgen $(WORDS)
 	./dictgen -b -o zxcvbn.dict -h dict-crc.h $(WORDS)
 
 dictgen: dict-generate.cpp makefile
-	$(CXX) $(CPPFLAGS) -std=c++11 $(CXXFLAGS) \
+	$(CXX) $(CPPFLAGS) -std=$(CPP_STD) $(CXXFLAGS) \
 		-o dictgen dict-generate.cpp $(LDFLAGS)
 
 test-c++inline: test.c zxcvbn-c++inline.o
@@ -98,6 +122,7 @@ test: test-file test-inline test-c++inline test-c++file test-shlib test-statlib 
 clean:
 	rm -f test-file zxcvbn-file.o test-c++file zxcvbn-c++file.o 
 	rm -f test-inline zxcvbn-inline.o zxcvbn-inline-pic.o test-c++inline zxcvbn-c++inline.o
-	rm -f dict-*.h zxcvbn.dict zxcvbn.cpp test.cpp
+	rm -f dict-*.h zxcvbn.dict zxcvbn.cpp test.cpp zxcvbn.o
 	rm -f dictgen
 	rm -f ${TARGET_LIB} ${SONAME} libzxcvbn.so test-shlib libzxcvbn.a test-statlib
+	rm -f *~

@@ -752,7 +752,7 @@ static int CheckReduction(StringIntVect_t & Ranks, NodeSPtr Root, EntryMap_t & E
             throw string("Found non-existant word ") + Text;
      }
      if (i > 0)
-         throw "Missing words in reduction check = " + to_string(i);
+         throw "Missing words in reduction check = " + to_string( static_cast<unsigned long long>(i) );
     return n;
 }
 
@@ -890,7 +890,7 @@ void CreateArrays(NodeSPtr Root, StringIntSet_t & StrSet, StringOfInts & ChildAd
     if (x >= (1 << BITS_CHILD_MAP_INDEX))
     {
         char Tmp[20];
-        snprintf(Tmp, sizeof Tmp, "%lu", x);
+        snprintf(Tmp, sizeof Tmp, "%lu", static_cast<unsigned long>(x));
         throw string("Not enough bits for child map index value of ") + Tmp + " for " +
                 Its->s + " (BITS_CHILD_MAP_INDEX too small)";
     }
@@ -1230,7 +1230,7 @@ int OutputCode(ostream *Out, bool Cmnts, const string & CharSet, StringIntSet_t 
             *Out << v;
             if (Index < (NodeData.size()-1))
             {
-                *Out << ',';
+                *Out << 'U' << ',';
                 if (v < 1000000000) *Out << ' ';
                 if (v < 100000000) *Out << ' ';
                 if (v < 10000000) *Out << ' ';
@@ -1245,7 +1245,7 @@ int OutputCode(ostream *Out, bool Cmnts, const string & CharSet, StringIntSet_t 
         if ((FewEndStart >= 2000000000) && !(NodeData[Index] & (uint64_t(1) << SHIFT_LARGE_ENDING_BIT)))
             FewEndStart = Index;
     }
-    *Out << "\n};\n";
+    *Out << 'U' << "\n};\n";
     unsigned int Len = ((NodeData.size() + 7) / 8);
     OutputSize += Len;
     x = 999;
