@@ -44,6 +44,9 @@
 
 #define log(x) (log((double)x))
 
+const char* ZxcvbnVersion() {  return ZXCVBN_VERSION ;   }
+const char* ZxcvbnGitRev()  {  return ZXCVBN_GITREV  ;   }
+
 /* Minimum number of characters in a incrementing/decrementing sequence match */
 #define MIN_SEQUENCE_LEN 3
 

@@ -85,15 +85,20 @@ extern "C" {
 #ifdef USE_DICT_FILE
 
 /**********************************************************************************
- * Read the dictionnary data from the given file. Returns 1 if OK, 0 if error.
+ * Read the dictionary data from the given file. Returns 1 if OK, 0 if error.
  * Called once at program startup.
  */
 int ZxcvbnInit(const char *);
 
 /**********************************************************************************
- * Free the dictionnary data after use. Called once at program shutdown.
+ * Free the dictionary data after use. Called once at program shutdown.
  */
 void ZxcvbnUnInit();
+
+/**********************************************************************************
+ * Introspection: Did we compile with USE_DICT_FILE? (yes)
+ */
+#define ZxcvbnDictIncluded() (1)
 
 #else
 
@@ -101,7 +106,23 @@ void ZxcvbnUnInit();
 #define ZxcvbnInit(s) 1
 #define ZxcvbnUnInit() do {} while(0)
 
+/**********************************************************************************
+ * Introspection: Did we compile with USE_DICT_FILE? (no)
+ */
+#define ZxcvbnDictIncluded() (0)
+
 #endif
+
+/**********************************************************************************
+ * Introspection: Get library version.
+ */
+const char* ZxcvbnVersion();
+
+/**********************************************************************************
+ * Introspection: Get git-ID (short) of the commit used to produce this lib.
+ */
+const char* ZxcvbnGitRev();
+
 
 /**********************************************************************************
  * The main password matching function. May be called multiple times.

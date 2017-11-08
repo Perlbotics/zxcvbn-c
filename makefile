@@ -30,6 +30,13 @@ CPP_STD ?= c++11
 
 #----------------------------------------------------------------------
 
+
+LIBINFO=-DZXCVBN_VERSION="\"1.0\""  -DZXCVBN_GITREV="\"$(shell git rev-parse --short HEAD)\""
+
+CFLAGS+=$(LIBINFO)
+CXXFLAGS+=$(LIBINFO)
+
+
 # need zxcvbn.h prior to package installation
 CPPFLAGS += -I.
 
