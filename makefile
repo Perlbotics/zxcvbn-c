@@ -7,18 +7,27 @@ AR ?= ar
 CXX ?= g++
 
 
-LIBINFO=-DZXCVBN_VERSION="\"1.0\""  -DZXCVBN_GITREV="\"$(shell git rev-parse --short HEAD)\""
+#-- increment on incompatible API changes
+LIB_VERSION_MAJOR=0
+#-- increment on compatible API changes
+LIB_VERSION_MINOR=1
+#-- increment on bugfixes
+LIB_VERSION_REV=0
 
-CFLAGS+=$(LIBINFO)
-CXXFLAGS+=$(LIBINFO)
+
+LIB_VERSION_TRIPLE=$(LIB_VERSION_MAJOR).$(LIB_VERSION_MINOR).$(LIB_VERSION_REV)
+LIB_INFO=-DZXCVBN_VERSION="\"$(LIB_VERSION_TRIPLE)\""  -DZXCVBN_GITREV="\"$(shell git rev-parse --short HEAD)\""
+
+CFLAGS+=$(LIB_INFO)
+CXXFLAGS+=$(LIB_INFO)
 
 
 # need zxcvbn.h prior to package installation
 CPPFLAGS += -I.
 
 # library metadata
-TARGET_LIB = libzxcvbn.so.0.0.0
-SONAME = libzxcvbn.so.0
+TARGET_LIB = libzxcvbn.so.$(LIB_VERSION_TRIPLE)
+SONAME = libzxcvbn.so.$(LIB_VERSION_MAJOR)
 
 WORDS = words-eng_wiki.txt words-female.txt words-male.txt words-passwd.txt words-surname.txt words-tv_film.txt
 
