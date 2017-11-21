@@ -34,9 +34,9 @@ CPP_STD ?= c++11
 #-- increment on incompatible API changes
 LIB_VERSION_MAJOR=0
 #-- increment on compatible API changes
-LIB_VERSION_MINOR=1
+LIB_VERSION_MINOR=2
 #-- increment on bugfixes
-LIB_VERSION_REV=1
+LIB_VERSION_REV=0
 
 
 LIB_VERSION_TRIPLE=$(LIB_VERSION_MAJOR).$(LIB_VERSION_MINOR).$(LIB_VERSION_REV)
@@ -55,7 +55,7 @@ SONAME = libzxcvbn.so.$(LIB_VERSION_MAJOR)
 
 WORDS = words-eng_wiki.txt words-female.txt words-male.txt words-passwd.txt words-surname.txt words-tv_film.txt
 
-all: test-file test-inline test-c++inline test-c++file test-shlib test-statlib
+all: test-file test-inline test-c++inline test-c++file test-shlib test-statlib test-internals
 
 test-shlib: test.c $(TARGET_LIB)
 	if [ ! -e libzxcvbn.so ]; then ln -s $(TARGET_LIB) libzxcvbn.so; fi
@@ -83,6 +83,10 @@ zxcvbn-file.o: zxcvbn.c dict-crc.h zxcvbn.h
 test-inline: test.c zxcvbn-inline.o
 	$(CC) $(CPPFLAGS) $(CFLAGS) \
 		-o test-inline test.c zxcvbn-inline.o $(LDFLAGS) -lm
+
+test-internals: test-internals.c zxcvbn.c dict-crc.h zxcvbn.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
+		-o test-internals test-internals.c $(LDFLAGS) -lm
 
 zxcvbn-inline-pic.o: zxcvbn.c dict-src.h zxcvbn.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -c -o $@ $<
@@ -120,7 +124,9 @@ zxcvbn-c++file.o: zxcvbn.c dict-crc.h zxcvbn.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) \
 		-DUSE_DICT_FILE -c -o zxcvbn-c++file.o zxcvbn.cpp
 
-test: test-file test-inline test-c++inline test-c++file test-shlib test-statlib testcases.txt
+test: test-internals test-file test-inline test-c++inline test-c++file test-shlib test-statlib testcases.txt
+	@echo Testing internals...
+	./test-internals
 	@echo Testing C build, dictionary from file
 	./test-file -t testcases.txt
 	@echo Testing C build, dictionary in executable
@@ -139,6 +145,8 @@ clean:
 	rm -f test-file zxcvbn-file.o test-c++file zxcvbn-c++file.o 
 	rm -f test-inline zxcvbn-inline.o zxcvbn-inline-pic.o test-c++inline zxcvbn-c++inline.o
 	rm -f dict-*.h zxcvbn.dict zxcvbn.cpp test.cpp zxcvbn.o
+	rm -f test-inline test-internals zxcvbn-inline.o zxcvbn-inline-pic.o test-c++inline zxcvbn-c++inline.o
+	rm -f dict-*.h zxcvbn.dict zxcvbn.cpp test.cppz zxcvbn.o
 	rm -f dictgen
 	rm -f ${TARGET_LIB} ${SONAME} libzxcvbn.so test-shlib libzxcvbn.a test-statlib
 	rm -f *~
